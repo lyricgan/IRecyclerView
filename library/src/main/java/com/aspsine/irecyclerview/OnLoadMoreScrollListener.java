@@ -16,12 +16,9 @@ public abstract class OnLoadMoreScrollListener extends RecyclerView.OnScrollList
     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         int visibleItemCount = layoutManager.getChildCount();
-
-
         boolean triggerCondition = visibleItemCount > 0
                 && newState == RecyclerView.SCROLL_STATE_IDLE
                 && canTriggerLoadMore(recyclerView);
-
         if (triggerCondition) {
             onLoadMore(recyclerView);
         }

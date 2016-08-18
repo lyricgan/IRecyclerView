@@ -25,43 +25,30 @@ import android.widget.LinearLayout;
  */
 public class IRecyclerView extends RecyclerView {
     private static final String TAG = IRecyclerView.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     private static final int STATUS_DEFAULT = 0;
-
     private static final int STATUS_SWIPING_TO_REFRESH = 1;
-
     private static final int STATUS_RELEASE_TO_REFRESH = 2;
-
     private static final int STATUS_REFRESHING = 3;
-
-    private static final boolean DEBUG = false;
 
     private int mStatus;
 
     private boolean mIsAutoRefreshing;
-
     private boolean mRefreshEnabled;
-
     private boolean mLoadMoreEnabled;
 
     private int mRefreshFinalMoveOffset;
 
     private OnRefreshListener mOnRefreshListener;
-
     private OnLoadMoreListener mOnLoadMoreListener;
-
     private OnLoadMoreScrollListener mOnLoadMoreScrollListener;
 
     private RefreshHeaderLayout mRefreshHeaderContainer;
-
     private FrameLayout mLoadMoreFooterContainer;
-
     private LinearLayout mHeaderViewContainer;
-
     private LinearLayout mFooterViewContainer;
-
     private View mRefreshHeaderView;
-
     private View mLoadMoreFooterView;
 
     public IRecyclerView(Context context) {
@@ -82,7 +69,6 @@ public class IRecyclerView extends RecyclerView {
         boolean loadMoreEnabled;
 
         try {
-
             refreshEnabled = a.getBoolean(R.styleable.IRecyclerView_refreshEnabled, false);
             loadMoreEnabled = a.getBoolean(R.styleable.IRecyclerView_loadMoreEnabled, false);
             refreshHeaderLayoutRes = a.getResourceId(R.styleable.IRecyclerView_refreshHeaderLayout, -1);
@@ -130,7 +116,6 @@ public class IRecyclerView extends RecyclerView {
                 mOnLoadMoreScrollListener = new OnLoadMoreScrollListener() {
                     @Override
                     public void onLoadMore(RecyclerView recyclerView) {
-
                         if (mOnLoadMoreListener != null && mStatus == STATUS_DEFAULT) {
                             mOnLoadMoreListener.onLoadMore(mLoadMoreFooterView);
                         }
