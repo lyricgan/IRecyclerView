@@ -22,6 +22,7 @@ import com.aspsine.irecyclerview.R;
 public class RefreshListView extends FrameLayout {
     private IRecyclerView recyclerView;
     private EmptyView emptyView;
+    private ErrorView errorView;
     private LoadingView loadingView;
 
     public RefreshListView(Context context) {
@@ -41,6 +42,7 @@ public class RefreshListView extends FrameLayout {
         View view = View.inflate(getContext(), R.layout.layout_irecyclerview_list_view, this);
         recyclerView = (IRecyclerView) view.findViewById(R.id.recycler_view);
         emptyView = (EmptyView) view.findViewById(R.id.empty_view);
+        errorView = (ErrorView) view.findViewById(R.id.error_view);
         loadingView = (LoadingView) view.findViewById(R.id.loading_view);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -167,6 +169,14 @@ public class RefreshListView extends FrameLayout {
         getEmptyView().setOnRetryListener(listener);
     }
 
+    public ErrorView getErrorView() {
+        return errorView;
+    }
+
+    public void setOnErrorRetryListener(ErrorView.OnRetryListener listener) {
+        getErrorView().setOnRetryListener(listener);
+    }
+
     public LoadingView getLoadingView() {
         return loadingView;
     }
@@ -175,18 +185,32 @@ public class RefreshListView extends FrameLayout {
         getRecyclerView().setVisibility(View.VISIBLE);
         getLoadingView().setVisibility(View.GONE);
         getEmptyView().setVisibility(View.GONE);
+        getErrorView().setVisibility(View.GONE);
     }
 
     public void showLoading() {
         getRecyclerView().setVisibility(View.GONE);
         getLoadingView().setVisibility(View.VISIBLE);
         getEmptyView().setVisibility(View.GONE);
+        getErrorView().setVisibility(View.GONE);
     }
 
     private void showEmptyView() {
         getRecyclerView().setVisibility(View.GONE);
         getLoadingView().setVisibility(View.GONE);
         getEmptyView().setVisibility(View.VISIBLE);
+        getErrorView().setVisibility(View.GONE);
+    }
+
+    private void showErrorView() {
+        getRecyclerView().setVisibility(View.GONE);
+        getLoadingView().setVisibility(View.GONE);
+        getEmptyView().setVisibility(View.GONE);
+        getErrorView().setVisibility(View.VISIBLE);
+    }
+
+    public void showEmpty() {
+        showEmpty(R.string.empty_no_data);
     }
 
     public void showEmpty(int textId) {
@@ -197,5 +221,19 @@ public class RefreshListView extends FrameLayout {
     public void showEmpty(String text) {
         showEmptyView();
         getEmptyView().setEmptyTips(text);
+    }
+
+    public void showError() {
+        showError(R.string.error_default_tips);
+    }
+
+    public void showError(int textId) {
+        showErrorView();
+        getErrorView().setMessage(textId);
+    }
+
+    public void showError(String text) {
+        showErrorView();
+        getErrorView().setMessage(text);
     }
 }
