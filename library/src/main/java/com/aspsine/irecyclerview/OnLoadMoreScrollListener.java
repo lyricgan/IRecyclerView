@@ -7,9 +7,11 @@ import android.view.View;
  * Created by aspsine on 16/3/13.
  */
 public abstract class OnLoadMoreScrollListener extends RecyclerView.OnScrollListener {
+    private boolean mLoadMoreDragging = false;
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        mLoadMoreDragging = (dy >= 20);
     }
 
     @Override
@@ -17,11 +19,12 @@ public abstract class OnLoadMoreScrollListener extends RecyclerView.OnScrollList
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         int visibleItemCount = layoutManager.getChildCount();
         boolean triggerCondition = visibleItemCount > 0
-                && newState == RecyclerView.SCROLL_STATE_IDLE
+                && (newState == RecyclerView.SCROLL_STATE_IDLE || (newState == RecyclerView.SCROLL_STATE_DRAGGING && mLoadMoreDragging))
                 && canTriggerLoadMore(recyclerView);
         if (triggerCondition) {
             onLoadMore(recyclerView);
         }
+        mLoadMoreDragging = false;
     }
 
     public boolean canTriggerLoadMore(RecyclerView recyclerView) {

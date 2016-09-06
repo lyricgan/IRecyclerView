@@ -5,4 +5,5 @@
           android:layout_height="36dp"
           android:layout_gravity="center"
           android:gravity="center"
-          android:text="@string/load_more_default"/>
+          android:text="@string/load_more_default"
+          android:textColor="#666666"/>

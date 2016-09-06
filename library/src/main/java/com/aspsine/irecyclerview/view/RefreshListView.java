@@ -236,4 +236,8 @@ public class RefreshListView extends FrameLayout {
         showErrorView();
         getErrorView().setMessage(text);
     }
+
+    public boolean canLoadMore() {
+        return getLoadMoreFooterView().canLoadMore();
+    }
 }

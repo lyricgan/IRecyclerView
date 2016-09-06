@@ -1,14 +1,21 @@
 package com.aspsine.irecyclerview.demo.ui.activity;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
+import android.view.View;
 
+import com.aspsine.irecyclerview.OnLoadMoreListener;
+import com.aspsine.irecyclerview.OnRefreshListener;
 import com.aspsine.irecyclerview.demo.R;
+import com.aspsine.irecyclerview.demo.model.Image;
+import com.aspsine.irecyclerview.demo.network.NetworkAPI;
+import com.aspsine.irecyclerview.demo.ui.adapter.RefreshListAdapter;
+import com.aspsine.irecyclerview.demo.utils.ListUtils;
 import com.aspsine.irecyclerview.view.ErrorView;
 import com.aspsine.irecyclerview.view.RefreshListView;
+
+import java.util.List;
 
 /**
  * @author lyricgan
@@ -17,6 +24,9 @@ import com.aspsine.irecyclerview.view.RefreshListView;
  */
 public class RefreshActivity extends AppCompatActivity {
     private RefreshListView refreshListView;
+    private RefreshListAdapter mRefreshListAdapter;
+
+    private int mPage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,27 +38,79 @@ public class RefreshActivity extends AppCompatActivity {
     }
 
     private void initialize() {
+        refreshListView.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshListView.setRefreshing(true);
+                refresh();
+            }
+        });
+        refreshListView.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(View loadMoreView) {
+                if (refreshListView.canLoadMore() && !mRefreshListAdapter.isEmpty()) {
+                    refreshListView.showLoadMoreLoading(true);
+                    loadMore();
+                }
+            }
+        });
         refreshListView.setOnErrorRetryListener(new ErrorView.OnRetryListener() {
             @Override
             public void onRetry(ErrorView view) {
                 refreshListView.showLoading();
-                showMessage(getString(R.string.empty_no_data));
+                refresh();
             }
         });
+        mRefreshListAdapter = new RefreshListAdapter(this);
+        refreshListView.setAdapter(mRefreshListAdapter);
         refreshListView.showLoading();
-        showMessage("");
+        refresh();
     }
 
-    private void showMessage(final String message) {
-        new Handler().postDelayed(new Runnable() {
+    private void refresh() {
+        mPage = 1;
+        NetworkAPI.requestImages(mPage, new NetworkAPI.Callback<List<Image>>() {
             @Override
-            public void run() {
-                if (TextUtils.isEmpty(message)) {
-                    refreshListView.showError();
+            public void onSuccess(List<Image> images) {
+                refreshListView.showContent();
+                refreshListView.setRefreshing(false);
+                mRefreshListAdapter.clear();
+                if (ListUtils.isEmpty(images)) {
+                    refreshListView.showEmpty();
                 } else {
-                    refreshListView.showError(message);
+                    mPage = 2;
+                    mRefreshListAdapter.add(images);
+                    refreshListView.showLoadMoreLoading(false);
                 }
             }
-        }, 2000);
+
+            @Override
+            public void onFailure(Exception e) {
+                e.printStackTrace();
+                refreshListView.showContent();
+                refreshListView.setRefreshing(false);
+            }
+        });
+    }
+
+    private void loadMore() {
+        NetworkAPI.requestImages(mPage, new NetworkAPI.Callback<List<Image>>() {
+            @Override
+            public void onSuccess(final List<Image> images) {
+                if (ListUtils.isEmpty(images)) {
+                    refreshListView.showLoadMoreEnd();
+                } else {
+                    mPage++;
+                    refreshListView.showLoadMoreLoading(false);
+                    mRefreshListAdapter.add(images);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                e.printStackTrace();
+                refreshListView.showLoadMoreError();
+            }
+        });
     }
 }
