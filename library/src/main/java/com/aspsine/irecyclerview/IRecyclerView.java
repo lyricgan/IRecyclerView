@@ -67,22 +67,17 @@ public class IRecyclerView extends RecyclerView {
         int refreshFinalMoveOffset = -1;
         boolean refreshEnabled;
         boolean loadMoreEnabled;
-
         try {
             refreshEnabled = a.getBoolean(R.styleable.IRecyclerView_refreshEnabled, false);
             loadMoreEnabled = a.getBoolean(R.styleable.IRecyclerView_loadMoreEnabled, false);
             refreshHeaderLayoutRes = a.getResourceId(R.styleable.IRecyclerView_refreshHeaderLayout, -1);
             loadMoreFooterLayoutRes = a.getResourceId(R.styleable.IRecyclerView_loadMoreFooterLayout, -1);
             refreshFinalMoveOffset = a.getDimensionPixelOffset(R.styleable.IRecyclerView_refreshFinalMoveOffset, -1);
-
         } finally {
             a.recycle();
         }
-
         setRefreshEnabled(refreshEnabled);
-
         setLoadMoreEnabled(loadMoreEnabled);
-
         if (refreshHeaderLayoutRes != -1) {
             setRefreshHeaderView(refreshHeaderLayoutRes);
         }
@@ -150,7 +145,9 @@ public class IRecyclerView extends RecyclerView {
             startScrollRefreshingStatusToDefaultStatus();
         } else {
             this.mIsAutoRefreshing = false;
-            Log.e(TAG, "isRefresh = " + refreshing + " current status = " + mStatus);
+            if (DEBUG) {
+                Log.e(TAG, "isRefresh = " + refreshing + " current status = " + mStatus);
+            }
         }
     }
 
@@ -162,7 +159,6 @@ public class IRecyclerView extends RecyclerView {
         if (!isRefreshTrigger(refreshHeaderView)) {
             throw new ClassCastException("Refresh header view must be an implement of RefreshTrigger");
         }
-
         if (mRefreshHeaderView != null) {
             removeRefreshHeaderView();
         }
@@ -310,20 +306,17 @@ public class IRecyclerView extends RecyclerView {
                 mLastTouchY = (int) (MotionEventCompat.getY(e, actionIndex) + 0.5f);
             }
             break;
-
             case MotionEvent.ACTION_POINTER_DOWN: {
                 mActivePointerId = MotionEventCompat.getPointerId(e, actionIndex);
                 mLastTouchX = (int) (MotionEventCompat.getX(e, actionIndex) + 0.5f);
                 mLastTouchY = (int) (MotionEventCompat.getY(e, actionIndex) + 0.5f);
             }
             break;
-
             case MotionEventCompat.ACTION_POINTER_UP: {
                 onPointerUp(e);
             }
             break;
         }
-
         return super.onInterceptTouchEvent(e);
     }
 
@@ -338,11 +331,12 @@ public class IRecyclerView extends RecyclerView {
                 mLastTouchY = getMotionEventY(e, index);
             }
             break;
-
             case MotionEvent.ACTION_MOVE: {
                 final int index = MotionEventCompat.findPointerIndex(e, mActivePointerId);
                 if (index < 0) {
-                    Log.e(TAG, "Error processing scroll; pointer index for id " + index + " not found. Did any MotionEvents get skipped?");
+                    if (DEBUG) {
+                        Log.e(TAG, "Error processing scroll; pointer index for id " + index + " not found. Did any MotionEvents get skipped?");
+                    }
                     return false;
                 }
 
@@ -360,10 +354,8 @@ public class IRecyclerView extends RecyclerView {
                     Log.i(TAG, "triggerCondition = " + triggerCondition + "; mStatus = " + mStatus + "; dy = " + dy);
                 }
                 if (triggerCondition) {
-
                     final int refreshHeaderContainerHeight = mRefreshHeaderContainer.getMeasuredHeight();
                     final int refreshHeaderViewHeight = mRefreshHeaderView.getMeasuredHeight();
-
                     if (dy > 0 && mStatus == STATUS_DEFAULT) {
                         setStatus(STATUS_SWIPING_TO_REFRESH);
                         mRefreshTrigger.onStart(false, refreshHeaderViewHeight, mRefreshFinalMoveOffset);
@@ -375,7 +367,6 @@ public class IRecyclerView extends RecyclerView {
                             break;
                         }
                     }
-
                     if (mStatus == STATUS_SWIPING_TO_REFRESH || mStatus == STATUS_RELEASE_TO_REFRESH) {
                         if (refreshHeaderContainerHeight >= refreshHeaderViewHeight) {
                             setStatus(STATUS_RELEASE_TO_REFRESH);
@@ -388,7 +379,6 @@ public class IRecyclerView extends RecyclerView {
                 }
             }
             break;
-
             case MotionEventCompat.ACTION_POINTER_DOWN: {
                 final int index = MotionEventCompat.getActionIndex(e);
                 mActivePointerId = MotionEventCompat.getPointerId(e, index);
@@ -396,17 +386,14 @@ public class IRecyclerView extends RecyclerView {
                 mLastTouchY = getMotionEventY(e, index);
             }
             break;
-
             case MotionEventCompat.ACTION_POINTER_UP: {
                 onPointerUp(e);
             }
             break;
-
             case MotionEvent.ACTION_UP: {
                 onFingerUpStartAnimating();
             }
             break;
-
             case MotionEvent.ACTION_CANCEL: {
                 onFingerUpStartAnimating();
             }
@@ -453,7 +440,6 @@ public class IRecyclerView extends RecyclerView {
                 ratioDy = finalDragOffset - offset;
             }
         }
-
         if (nextOffset < 0) {
             ratioDy = -offset;
         }
@@ -533,12 +519,10 @@ public class IRecyclerView extends RecyclerView {
                     mRefreshTrigger.onMove(false, true, height);
                 }
                 break;
-
                 case STATUS_RELEASE_TO_REFRESH: {
                     mRefreshTrigger.onMove(false, true, height);
                 }
                 break;
-
                 case STATUS_REFRESHING: {
                     mRefreshTrigger.onMove(true, true, height);
                 }
@@ -552,7 +536,6 @@ public class IRecyclerView extends RecyclerView {
         @Override
         public void onAnimationEnd(Animator animation) {
             int lastStatus = mStatus;
-
             switch (mStatus) {
                 case STATUS_SWIPING_TO_REFRESH: {
                     if (mIsAutoRefreshing) {
@@ -570,7 +553,6 @@ public class IRecyclerView extends RecyclerView {
                     }
                 }
                 break;
-
                 case STATUS_RELEASE_TO_REFRESH: {
                     mRefreshHeaderContainer.getLayoutParams().height = mRefreshHeaderView.getMeasuredHeight();
                     mRefreshHeaderContainer.requestLayout();
@@ -581,7 +563,6 @@ public class IRecyclerView extends RecyclerView {
                     }
                 }
                 break;
-
                 case STATUS_REFRESHING: {
                     mIsAutoRefreshing = false;
                     mRefreshHeaderContainer.getLayoutParams().height = 0;
