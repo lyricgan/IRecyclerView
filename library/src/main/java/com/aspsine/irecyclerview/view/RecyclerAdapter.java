@@ -18,7 +18,7 @@ import java.util.List;
  * @description
  * @time 2016/8/11 16:57
  */
-public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<IViewHolder> {
+public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHolder> {
     protected Context mContext;
     protected List<T> mDataList;
     private int mLayoutId;
@@ -47,9 +47,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<IViewHolde
     }
 
     @Override
-    public IViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(mLayoutId, parent, false);
-        final ViewHolder holder = new ViewHolder(itemView);
+        final BaseViewHolder holder = new BaseViewHolder(itemView);
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,15 +74,15 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<IViewHolde
     }
 
     @Override
-    public void onBindViewHolder(IViewHolder holder, int position) {
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
         T object = null;
         if (mDataList != null && !mDataList.isEmpty()) {
             object = mDataList.get(position);
         }
-        convert(holder.itemView, position, object);
+        convert(holder, object);
     }
 
-    public abstract void convert(View itemView, int position, T item);
+    public abstract void convert(BaseViewHolder holder, T item);
 
     @Override
     public int getItemCount() {
