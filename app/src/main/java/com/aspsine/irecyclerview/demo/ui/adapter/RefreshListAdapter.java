@@ -5,7 +5,7 @@ import android.widget.ImageView;
 
 import com.aspsine.irecyclerview.demo.R;
 import com.aspsine.irecyclerview.demo.model.Image;
-import com.aspsine.irecyclerview.view.BaseViewHolder;
+import com.aspsine.irecyclerview.view.RecyclerViewHolder;
 import com.aspsine.irecyclerview.view.RecyclerAdapter;
 import com.bumptech.glide.Glide;
 
@@ -21,7 +21,7 @@ public class RefreshListAdapter extends RecyclerAdapter<Image> {
     }
 
     @Override
-    public void convert(BaseViewHolder holder, Image item) {
+    public void convert(RecyclerViewHolder holder, Image item) {
         ImageView ivItemImage = holder.getView(R.id.iv_item_image);
         Glide.with(getContext()).load(item.image).placeholder(R.mipmap.superman).dontAnimate().into(ivItemImage);
     }
