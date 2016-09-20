@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aspsine.irecyclerview.IViewHolder;
 import com.aspsine.irecyclerview.OnItemClickListener;
 
 import java.util.ArrayList;
@@ -15,12 +14,12 @@ import java.util.List;
 
 /**
  * @author lyricgan
- * @description
+ * @description recycler adapter for RecyclerView
  * @time 2016/8/11 16:57
  */
 public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerViewHolder> {
-    protected Context mContext;
-    protected List<T> mDataList;
+    private Context mContext;
+    private List<T> mDataList;
     private int mLayoutId;
     private OnItemClickListener<T> mOnItemClickListener;
 
@@ -53,21 +52,13 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /**
-                 * in order to get the right position, you must use the method with i- prefix in
-                 * {@link IViewHolder} eg:
-                 * {@code IViewHolder.getIPosition()}
-                 * {@code IViewHolder.getILayoutPosition()}
-                 * {@code IViewHolder.getIAdapterPosition()}
-                 */
+                if (mOnItemClickListener == null || (mDataList == null || mDataList.isEmpty())) {
+                    return;
+                }
+                // in order to get the right position, you must use the method with i- prefix in
                 final int position = holder.getIAdapterPosition();
-                T object = null;
-                if (mDataList != null && !mDataList.isEmpty()) {
-                    object = mDataList.get(position);
-                }
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemClick(position, object, v);
-                }
+                T object = mDataList.get(position);
+                mOnItemClickListener.onItemClick(position, object, v);
             }
         });
         return holder;
@@ -75,14 +66,15 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
-        T object = null;
-        if (mDataList != null && !mDataList.isEmpty()) {
-            object = mDataList.get(position);
+        if (mDataList == null || mDataList.isEmpty()) {
+            return;
         }
-        convert(holder, object);
+        T object = mDataList.get(position);
+        holder.setAssociatedObject(object);
+        convert(holder, position, object);
     }
 
-    public abstract void convert(RecyclerViewHolder holder, T item);
+    public abstract void convert(RecyclerViewHolder holder, int position, T item);
 
     @Override
     public int getItemCount() {
@@ -148,12 +140,5 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
     public void clear() {
         this.mDataList.clear();
         this.notifyDataSetChanged();
-    }
-
-    static class ViewHolder extends IViewHolder {
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-        }
     }
 }

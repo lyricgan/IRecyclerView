@@ -21,7 +21,7 @@ public class RefreshListAdapter extends RecyclerAdapter<Image> {
     }
 
     @Override
-    public void convert(RecyclerViewHolder holder, Image item) {
+    public void convert(RecyclerViewHolder holder, int position, Image item) {
         ImageView ivItemImage = holder.getView(R.id.iv_item_image);
         Glide.with(getContext()).load(item.image).placeholder(R.mipmap.superman).dontAnimate().into(ivItemImage);
     }
