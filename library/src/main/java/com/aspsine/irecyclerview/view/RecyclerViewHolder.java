@@ -22,8 +22,6 @@ import android.widget.TextView;
 
 import com.aspsine.irecyclerview.IViewHolder;
 
-import java.util.HashSet;
-
 /**
  * @author lyricgan
  * @description view holder extends {@link IViewHolder}
@@ -34,8 +32,6 @@ public class RecyclerViewHolder extends IViewHolder {
      * Views indexed with their IDs
      */
     private final SparseArray<View> views;
-    private final HashSet<Integer> childClickViewIds;
-    private final HashSet<Integer> itemChildLongClickViewIds;
     private View convertView;
     /**
      * Package private field to retain the associated user object and detect a change
@@ -45,21 +41,7 @@ public class RecyclerViewHolder extends IViewHolder {
     public RecyclerViewHolder(View view) {
         super(view);
         this.views = new SparseArray<View>();
-        this.childClickViewIds = new HashSet<>();
-        this.itemChildLongClickViewIds = new HashSet<>();
         this.convertView = view;
-    }
-
-    public HashSet<Integer> getItemChildLongClickViewIds() {
-        return itemChildLongClickViewIds;
-    }
-
-    public HashSet<Integer> getChildClickViewIds() {
-        return childClickViewIds;
-    }
-
-    public View getConvertView() {
-        return convertView;
     }
 
     /**
@@ -294,30 +276,9 @@ public class RecyclerViewHolder extends IViewHolder {
      * @param listener The on click listener;
      * @return The RecyclerViewHolder for chaining.
      */
-    @Deprecated
     public RecyclerViewHolder setOnClickListener(int viewId, View.OnClickListener listener) {
         View view = getView(viewId);
         view.setOnClickListener(listener);
-        return this;
-    }
-
-    /**
-     * add the child view id can support child view click
-     * @param viewId add childView id
-     * @return The RecyclerViewHolder for chaining.
-     */
-    public RecyclerViewHolder addOnClickListener(int viewId) {
-        childClickViewIds.add(viewId);
-        return this;
-    }
-
-    /**
-     * add long click view id
-     * @param viewId add child view id
-     * @return The RecyclerViewHolder for chaining.
-     */
-    public RecyclerViewHolder addOnLongClickListener(int viewId){
-        itemChildLongClickViewIds.add(viewId);
         return this;
     }
 
@@ -455,6 +416,10 @@ public class RecyclerViewHolder extends IViewHolder {
         AdapterView view = getView(viewId);
         view.setAdapter(adapter);
         return this;
+    }
+
+    public View getView() {
+        return convertView;
     }
 
     @SuppressWarnings("unchecked")
