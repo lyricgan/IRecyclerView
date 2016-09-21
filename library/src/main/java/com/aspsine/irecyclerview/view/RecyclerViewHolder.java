@@ -34,7 +34,7 @@ public class RecyclerViewHolder extends IViewHolder {
     private final SparseArray<View> views;
     private View convertView;
     /**
-     * Package private field to retain the associated user object and detect a change
+     * to retain the associated user object and detect a change
      */
     private Object associatedObject;
 
